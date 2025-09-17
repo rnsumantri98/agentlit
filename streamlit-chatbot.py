@@ -8,16 +8,14 @@ st.title("Simple n8n + Streamlit Demo")
 st.write("Enter your details below to send a webhook to an n8n workflow.")
 
 with st.form(key='my_form'):
-    name = st.text_input("Name")
-    email = st.text_input("Email")
+    barang = st.text_input("Nama Barang")
     submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
     if name and email:
         # Prepare the payload to send to n8n
         payload = {
-            "name": name,
-            "email": email
+            "barang": barang,
         }
 
         try:
@@ -32,4 +30,4 @@ if submit_button:
         except requests.exceptions.RequestException as e:
             st.error(f"An error occurred: {e}")
     else:
-        st.warning("Please fill out both the name and email fields.")
+        st.warning("masukkan nama barang.")
