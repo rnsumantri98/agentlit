@@ -47,15 +47,22 @@ if submit_button:
     else:
         st.warning("Silakan masukkan nama barang.")
 
-# Menampilkan output di bawah formulir jika ada respons di session_state
+# Menampilkan output sebagai teks biasa
 if st.session_state['n8n_response']:
     st.subheader("Output dari n8n:")
-    # st.json() sangat berguna untuk menampilkan respons JSON yang terstruktur dan mudah dibaca.
-    st.json(st.session_state['n8n_response'])
     
     response_data = st.session_state['n8n_response']
-    if 'pesan' in response_data:
-        st.info(f"Pesan n8n: {response_data['pesan']}")
-    if 'barang_yang_diminta' in response_data:
-        # Perbaikan di sini: Tambahkan tanda kutip penutup (")
-        st.write(f"Barang yang diproses: **{response_data['barang_yang_diminta']}**")
+    
+    # Periksa apakah respons adalah daftar dan memiliki elemen pertama
+    if isinstance(response_data, list) and len(response_data) > 0:
+        # Akses objek pertama dalam daftar
+        first_item = response_data[0]
+        
+        # Periksa apakah kunci 'output' ada di objek pertama
+        if 'output' in first_item:
+            output_text = first_item['output']
+            st.write(f"**Hasil:** {output_text}")
+        else:
+            st.warning("Kunci 'output' tidak ditemukan dalam respons n8n.")
+    else:
+        st.warning("Respons n8n tidak dalam format yang diharapkan.")
