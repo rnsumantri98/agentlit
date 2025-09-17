@@ -1,25 +1,35 @@
 import streamlit as st
 import requests
 
-st.title("n8n-Streamlit Demo")
+# Replace with your actual n8n webhook URL
+N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook-test/3daa2655-3333-4c34-87a4-7eb5e653af9d"
 
-user_input = st.text_input("Enter your message:")
+st.title("Simple n8n + Streamlit Demo")
+st.write("Enter your details below to send a webhook to an n8n workflow.")
 
-if st.button("Send to n8n"):
-        if user_input:
-            # Prepare the data to send to n8n
-            payload = {"message": user_input}
-            # Replace with your actual n8n webhook URL
-            n8n_webhook_url = "https://anahdraw.app.n8n.cloud/webhook/3daa2655-3333-4c34-87a4-7eb5e653af9d"
+with st.form(key='my_form'):
+    name = st.text_input("Name")
+    email = st.text_input("Email")
+    submit_button = st.form_submit_button(label='Submit')
 
-            # Send the data to n8n
-            try:
-                response = requests.post(n8n_webhook_url, json=payload)
-                response.raise_for_status()  # Raise an exception for bad status codes
-                n8n_response = response.json()
-                st.success("Message sent to n8n successfully!")
-                st.write("Response from n8n:", n8n_response)
-            except requests.exceptions.RequestException as e:
-                st.error(f"Error sending message to n8n: {e}")
-        else:
-            st.warning("Please enter a message.")
+if submit_button:
+    if name and email:
+        # Prepare the payload to send to n8n
+        payload = {
+            "name": name,
+            "email": email
+        }
+
+        try:
+            # Send the POST request to the n8n webhook
+            response = requests.post(N8N_WEBHOOK_URL, json=payload)
+
+            if response.status_code == 200:
+                st.success(f"Webhook sent successfully! n8n responded: {response.text}")
+                # You can see the webhook execution in your n8n instance
+            else:
+                st.error(f"Failed to send webhook. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please fill out both the name and email fields.")
