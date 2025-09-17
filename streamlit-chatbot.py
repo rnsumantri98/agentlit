@@ -12,7 +12,7 @@ with st.form(key='my_form'):
     submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
-    if name and email:
+    if barang:
         # Prepare the payload to send to n8n
         payload = {
             "barang": barang,
