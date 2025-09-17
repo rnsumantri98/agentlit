@@ -4,7 +4,7 @@ import json
 
 # Pastikan menggunakan URL webhook produksi n8n Anda.
 # URL di bawah adalah URL uji coba yang tidak akan berfungsi.
-N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook/3daa2655-3333-4c34-87a4-7eb5e653af9d"
+N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook-test/3daa2655-3333-4c34-87a4-7eb5e653af9d"
 
 st.title("Demo n8n + Streamlit dengan Output")
 st.write("Masukkan nama barang di bawah untuk mengirim data ke n8n dan melihat hasilnya.")
