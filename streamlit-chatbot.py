@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Replace with your actual n8n webhook URL
-N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook-test/3daa2655-3333-4c34-87a4-7eb5e653af9d"
+N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook/3daa2655-3333-4c34-87a4-7eb5e653af9d"
 
 st.title("Simple n8n + Streamlit Demo")
 st.write("Enter your details below to send a webhook to an n8n workflow.")
