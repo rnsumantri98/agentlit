@@ -10,7 +10,7 @@ if st.button("Send to n8n"):
             # Prepare the data to send to n8n
             payload = {"message": user_input}
             # Replace with your actual n8n webhook URL
-            n8n_webhook_url = "YOUR_N8N_WEBHOOK_URL"
+            n8n_webhook_url = "https://anahdraw.app.n8n.cloud/webhook-test/3daa2655-3333-4c34-87a4-7eb5e653af9d"
 
             # Send the data to n8n
             try:
