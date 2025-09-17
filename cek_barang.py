@@ -53,10 +53,6 @@ if st.session_state['n8n_response']:
     # st.json() sangat berguna untuk menampilkan respons JSON yang terstruktur dan mudah dibaca.
     st.json(st.session_state['n8n_response'])
     
-if st.session_state['n8n_response']:
-    st.subheader("Output dari n8n:")
-    st.json(st.session_state['n8n_response'])
-    
     response_data = st.session_state['n8n_response']
     if 'pesan' in response_data:
         st.info(f"Pesan n8n: {response_data['pesan']}")
