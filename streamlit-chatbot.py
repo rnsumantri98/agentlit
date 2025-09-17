@@ -1,86 +1,77 @@
-def main():
-st.set_page_config(page_title="Inventory Checker (Streamlit + n8n Webhook)", layout="wide")
-ensure_server()
+# mini_app.py
+# Versi sederhana untuk praktik ringan: Streamlit UI + FastAPI webhook
+# - Tanpa database
+# - Data inventory hardcoded (bisa diganti mudah)
+# - Satu endpoint webhook: POST /webhook/check_item
+# -------------------------------------------------------
+# Cara jalankan:
+# pip install streamlit fastapi uvicorn pydantic
+# streamlit run mini_app.py
+# Webhook lokal:
+# POST http://localhost:8000/webhook/check_item
+# Body JSON: {"sku": "SKU-ANL-CH-200", "location": "GUDANG_PUSAT"}
+# -------------------------------------------------------
 
 
-st.title("🔗 Inventory Checker — Streamlit + FastAPI Webhook")
-st.caption("Webhook endpoint live at: http://localhost:8000/webhook/check_item")
+import os
+import threading
+from typing import Optional, List
+from datetime import date
 
 
-with st.expander("Webhook usage (for n8n)", expanded=False):
-st.markdown(
-"""
-**HTTP**: `POST /webhook/check_item`
+import streamlit as st
+from pydantic import BaseModel
+from fastapi import FastAPI, Header, HTTPException
+from fastapi.responses import JSONResponse
+import uvicorn
 
 
-**Headers**:
-`Content-Type: application/json`
-`X-API-Key: <your_api_key>` *(omit if API_KEY not set)*
+# ====== Config opsional ======
+API_KEY = os.getenv("API_KEY", "") # jika ingin pakai header X-API-Key
 
 
-**Body (JSON)**:
-```json
-{ "sku": "SKU-ANL-CH-200", "location": "GUDANG_PUSAT" }
-```
-
-
-**Response (JSON)**:
-```json
+# ====== Data contoh (ganti sesuai kebutuhan) ======
+INVENTORY = [
 {
-"found": true,
-"results": [
+"SKU": "SKU-ANL-CH-200", "Product Name": "Anlene Chocolate", "Variant": "200g",
+"UOM": "pcs", "Location": "GUDANG_PUSAT", "Qty": 7,
+"Low Stock Threshold": 5, "ETA Restock": date(2025, 9, 22)
+},
 {
-"SKU": "SKU-ANL-CH-200",
-"product_name": "Anlene Chocolate",
-"variant": "200g",
-"uom": "pcs",
-"location": "GUDANG_PUSAT",
-"qty": 7,
-"low_stock_threshold": 5,
-"eta_restock": "2025-09-22",
-"low_stock": false
-}
+"SKU": "SKU-ANL-CH-600", "Product Name": "Anlene Chocolate", "Variant": "600g",
+"UOM": "pcs", "Location": "GUDANG_PUSAT", "Qty": 15,
+"Low Stock Threshold": 5, "ETA Restock": None
+},
+{
+"SKU": "SKU-PS5D-825", "Product Name": "PS5 Digital", "Variant": "825GB",
+"UOM": "unit", "Location": "GUDANG_PUSAT", "Qty": 12,
+"Low Stock Threshold": 3, "ETA Restock": None
+},
+{
+"SKU": "SKU-PS5D-825", "Product Name": "PS5 Digital", "Variant": "825GB",
+"UOM": "unit", "Location": "TOKO_BEKASI", "Qty": 2,
+"Low Stock Threshold": 3, "ETA Restock": date(2025, 9, 25)
+},
 ]
-}
-```
 
 
-To refresh data cache (from CSV/Sheet):
-`POST /webhook/refresh_cache`
-"""
-)
-
-
-st.subheader("🔍 Quick Check (manual)")
-c1, c2, c3 = st.columns([2,2,1])
-sku = c1.text_input("SKU", placeholder="e.g., SKU-ANL-CH-200")
-location = c2.text_input("Location (optional)", placeholder="e.g., GUDANG_PUSAT / TOKO_BEKASI")
-if c3.button("Check"):
-df = query_inventory(sku, location if location else None)
-if df.empty:
-st.error("Item not found")
-else:
-# highlight low stock
-def _hl(row):
-low = int(row["Qty"]) <= int(row["Low Stock Threshold"]) if pd.notna(row["Low Stock Threshold"]) else False
-style = ['background-color: #ffd6d6' if low else '' for _ in row]
-return style
-st.dataframe(df.style.apply(_hl, axis=1), use_container_width=True)
-
-
-st.subheader("📦 Current Inventory Cache")
-with engine.connect() as conn:
-df_all = pd.read_sql("SELECT * FROM inventory", conn)
-st.dataframe(df_all, use_container_width=True)
-
-
-st.sidebar.header("⚙️ Settings")
-if st.sidebar.button("Refresh cache now"):
-df = refresh_inventory_cache()
-st.sidebar.success(f"Refreshed: {df.shape[0]} rows")
-
-
-
-
-if __name__ == "__main__":
+# ====== Util ======
+def check_item(sku: str, location: Optional[str] = None) -> List[dict]:
+sku = (sku or "").strip().upper()
+loc = (location or "").strip().upper()
+results = []
+for row in INVENTORY:
+if str(row.get("SKU", "")).upper() != sku:
+continue
+if location and str(row.get("Location", "")).upper() != loc:
+continue
+qty = int(row.get("Qty") or 0)
+thr = int(row.get("Low Stock Threshold") or 0)
+low_stock = qty <= thr if thr else False
+eta = row.get("ETA Restock")
+results.append({
+"SKU": row.get("SKU"),
+"product_name": row.get("Product Name"),
+"variant": row.get("Variant"),
+"uom": row.get("UOM"),
 main()
