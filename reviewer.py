@@ -124,4 +124,4 @@ st.sidebar.info(
     "1. **Unggah Dokumen:** Pilih file kontrak dalam format teks (.txt) atau markdown (.md).\n"
     "2. **Tinjau dengan AI:** Klik tombol 'Tinjau Dokumen' untuk mengirim konten ke OpenAI untuk dianalisis.\n"
     "3. **Lihat Hasil:** Hasil analisis, termasuk potensi risiko dan saran, akan ditampilkan.\n"
-    "4. **Ambil Tindakan:** Pilih 'Setujui' atau 'Tolak'. Keputusan Anda akan dikirim ke sistem alur kerja (n8n) untuk tindakan lebih lanjut."
+    "4. **Ambil Tindakan:** Pilih 'Setujui' atau 'Tolak'. Keputusan Anda akan dikirim ke sistem alur kerja (n8n) untuk tindakan lebih lanjut.")
