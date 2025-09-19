@@ -26,7 +26,7 @@ def review_contract(contract_text, api_key):
     try:
         openai.api_key = api_key # Mengatur kunci API sebelum melakukan panggilan
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "Anda adalah asisten hukum ahli yang berspesialisasi dalam peninjauan kontrak. Tinjau dokumen berikut secara komprehensif, identifikasi potensi risiko, klausul yang tidak jelas, dan area yang mungkin memerlukan negosiasi lebih lanjut. Berikan ringkasan, poin-poin penting, dan saran dalam format yang jelas dan mudah dibaca."},
                 {"role": "user", "content": contract_text}
