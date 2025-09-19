@@ -4,17 +4,3 @@ requests==2.32.3
 python-dateutil==2.9.0.post0
 streamlit
 openai
-requests```
-
----
-
-### Penjelasan Persyaratan
-
-Berikut adalah rincian lengkap dari semua yang Anda butuhkan untuk menjalankan aplikasi ini.
-
-#### 1. Persyaratan Perangkat Lunak (Python Libraries)
-
-Ini adalah pustaka Python yang perlu Anda instal. Anda dapat menginstal semuanya sekaligus menggunakan file `requirements.txt` di atas dengan perintah:
-
-```bash
-pip install -r requirements.txt
