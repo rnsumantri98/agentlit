@@ -2,26 +2,20 @@ import streamlit as st
 import requests
 import os
 
-# Fungsi untuk memanggil Langflow API
-def run_research_agent(api_url, api_key, research_topic):
+# Fungsi untuk memanggil Langflow API yang disesuaikan dengan format 'Bearer' token
+def run_research_agent(api_url, bearer_token, research_topic):
     """
     Fungsi ini mengirimkan permintaan ke Langflow API untuk menjalankan agen riset.
+    Menggunakan header otorisasi 'Bearer' token.
     """
-    # Pastikan URL diakhiri dengan /run
-    if not api_url.endswith('/run'):
-        api_url += '/run'
-
     payload = {
         "input_value": research_topic,
         "output_type": "chat",
-        "input_type": "chat",
-        "tweaks": {
-            # Anda dapat menambahkan penyesuaian (tweaks) di sini jika alur kerja Anda membutuhkannya
-        }
+        "input_type": "chat"
     }
     headers = {
         "Content-Type": "application/json",
-        "x-api-key": api_key
+        "Authorization": f"Bearer {bearer_token}"  # Menggunakan format 'Bearer'
     }
 
     try:
@@ -41,14 +35,19 @@ st.write("Aplikasi ini memungkinkan Anda untuk melakukan riset menggunakan agen 
 # Sidebar untuk input pengguna
 with st.sidebar:
     st.header("Konfigurasi")
-    langflow_api_url = st.text_input("URL API Langflow", placeholder="Masukkan URL API Langflow Anda")
-    langflow_api_key = st.text_input("Kunci API Langflow", type="password", placeholder="Masukkan Kunci API Langflow Anda")
+    # URL API sudah diisi sebelumnya sesuai dengan yang Anda berikan
+    langflow_api_url = st.text_input(
+        "URL API Langflow",
+        value="https://api.langflow.astra.datastax.com/lf/115811d4-1b67-443e-b29a-5db8ec947ec6/api/v1/run/4cbbaf67-2845-483b-ad9a-d17deb3ecdea"
+    )
+    # Input untuk 'Bearer Token'
+    application_token = st.text_input("Token Aplikasi Langflow (Bearer Token)", type="password", placeholder="Masukkan token Anda")
     openai_api_key = st.text_input("Kunci API OpenAI", type="password", placeholder="Masukkan Kunci API OpenAI Anda")
 
-    st.info("Pastikan untuk memasukkan URL API dan kunci yang valid dari Langflow dan OpenAI.")
+    st.info("Masukkan Token Aplikasi dari Langflow dan Kunci API OpenAI Anda.")
 
 # Area utama untuk input dan output
-research_topic = st.text_input("Masukkan Topik Riset", placeholder="Contoh: Perkembangan terbaru dalam kecerdasan buatan")
+research_topic = st.text_input("Masukkan Topik Riset", placeholder="Contoh: Efektivitas teknik rekayasa prompt dalam mengendalikan halusinasi AI")
 
 # Tombol untuk memulai riset
 start_research = st.button("Mulai Riset")
@@ -61,16 +60,17 @@ if 'research_result' in st.session_state:
 
 # Logika untuk menjalankan riset dan menampilkan hasil
 if start_research:
-    if not langflow_api_url or not langflow_api_key or not openai_api_key:
-        st.warning("Harap masukkan URL API Langflow, Kunci API Langflow, dan Kunci API OpenAI di sidebar.")
+    if not langflow_api_url or not application_token or not openai_api_key:
+        st.warning("Harap masukkan URL API Langflow, Token Aplikasi, dan Kunci API OpenAI di sidebar.")
     elif not research_topic:
         st.warning("Harap masukkan topik riset.")
     else:
         # Menetapkan kunci API OpenAI sebagai variabel lingkungan sementara untuk sesi ini
+        # Ini diperlukan jika alur kerja Langflow Anda mengandalkan variabel lingkungan OPENAI_API_KEY
         os.environ["OPENAI_API_KEY"] = openai_api_key
 
         with st.spinner("Agen sedang melakukan riset..."):
-            result = run_research_agent(langflow_api_url, langflow_api_key, research_topic)
+            result = run_research_agent(langflow_api_url, application_token, research_topic)
 
             if result:
                 st.session_state.research_result = result
@@ -83,7 +83,7 @@ if 'research_result' in st.session_state:
     # Struktur output dapat bervariasi tergantung pada bagaimana Anda membangun alur kerja Langflow Anda.
     # Sesuaikan path berikut sesuai dengan struktur JSON output dari Langflow Anda.
     try:
-        # Contoh path umum untuk mendapatkan output teks
+        # Mencoba mengekstrak output dari path yang umum
         output_text = result_data['outputs'][0]['outputs'][0]['results']['message']['text']
         st.markdown(output_text)
     except (KeyError, IndexError, TypeError) as e:
