@@ -2,20 +2,13 @@ import streamlit as st
 import openai
 import requests
 import os
-import io # BARU: Diperlukan untuk menangani byte file dalam memori
-import PyPDF2 # BARU: Pustaka untuk membaca file PDF
+import io 
+import PyPDF2
 
-# --- Konfigurasi ---
-# Atur kunci API OpenAI Anda di sini atau sebagai variabel lingkungan
-# os.environ["OPENAI_API_KEY"] = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 openai.api_key = os.getenv("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")
 
-# URL webhook n8n Anda
 N8N_WEBHOOK_URL = "https://anahdraw.app.n8n.cloud/webhook-test/3daa2655-3333-4c34-87a4-7eb5e653af9d"
 
-# --- Fungsi Bantuan ---
-
-# BARU: Fungsi untuk mengekstrak teks dari file PDF
 def extract_text_from_pdf(file_bytes):
     """
     Mengekstrak teks dari byte file PDF yang diunggah.
