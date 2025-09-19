@@ -94,7 +94,7 @@ webhook_url_input = st.sidebar.text_input(
 )
 
 if st.sidebar.button("Simpan Konfigurasi"):
-    if api_key_input.startswith("sk-") and "http" in webhook_url_input:
+    if api_key_input.startswith("sk") and ("http") in webhook_url_input:
         st.session_state.openai_api_key = api_key_input
         st.session_state.n8n_webhook_url = webhook_url_input
         st.session_state.config_set = True
